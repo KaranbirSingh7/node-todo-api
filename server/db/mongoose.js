@@ -2,11 +2,17 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-// Connect to mongoDB
-mongoose.connect('mongodb://localhost:27017/TodoApp', {
+// Connect to mongoDB - locally
+// mongoose.connect('mongodb://localhost:27017/TodoApp', {
+//     useMongoClient: true
+// });
+
+//---Remotely
+mongoose.connect('mongodb://root:root@ds245615.mlab.com:45615/todoapplication7',{
     useMongoClient: true
 });
 
+//Export for use in other files ex-server.js
 module.exports = {
     mongoose
 };

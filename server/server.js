@@ -29,7 +29,7 @@ app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send(todos);
     }, (err) => {
-        res.statud(400).send(err);
+        res.status(400).send(err);
     });
 });
 
@@ -40,7 +40,11 @@ app.get('/todos/:id', (req, res) => {
         res.status(404).send();
     } else {
         Todo.findById(id).then((todo) => {
-            res.status(200).send(todo);
+            if (!todo) {
+                res.status(404).send();
+            } else {
+                res.status(200).send(todo);
+            }
         }, (err) => {
             res.status(400).send();
         })
