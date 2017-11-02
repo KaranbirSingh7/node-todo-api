@@ -8,7 +8,7 @@ mongoose.Promise = global.Promise;
 // });
 
 //---Remotely
-mongoose.connect('mongodb://root:root@ds245615.mlab.com:45615/todoapplication7',{
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/TodoApp',{
     useMongoClient: true
 });
 
