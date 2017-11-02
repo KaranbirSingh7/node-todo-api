@@ -1,7 +1,8 @@
 //Libraries
-var express = require('express');
-var bodyParser = require('body-parser');
-var { ObjectID } = require('mongodb');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const { ObjectID } = require('mongodb');
 // Local imports
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
@@ -68,6 +69,35 @@ app.delete('/todos/:id', (req, res) => {
         });
     }
 })
+
+
+app.patch('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    //Pull things that user can have access
+    var body = _.pick(req.body, ['text', 'completed']);
+
+    //Check ID validation
+    if (!ObjectID.isValid(id)) {
+        res.status(404).send();
+    } else {
+        //if user completed Task then add completedAt
+        if (_.isBoolean(body.completed) && body.completed) {
+            //Completed task set timeStamp
+            body.completedAt = new Date().getTime();
+        } else {
+            body.completed = false; //Task not completed
+            body.completedAt = null; 
+        }
+        //Update $set everything that user entered
+        Todo.findByIdAndUpdate(id, {$set: body}, {new : true}).then( (todo) => {
+            if (!todo) {
+                res.status(404).send();
+            } else {
+                res.status(200).send({todo});
+            }
+        }).catch((e) => res.status(400).send());
+    }
+});
 
 app.listen(port, () => {
     console.log('Server is up on port', port);
