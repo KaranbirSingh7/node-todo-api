@@ -1,7 +1,7 @@
 //Libraries
 var express = require('express');
 var bodyParser = require('body-parser');
-
+var { ObjectID } = require('mongodb');
 // Local imports
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
@@ -33,8 +33,22 @@ app.get('/todos', (req, res) => {
     });
 });
 
+app.get('/todos/:id', (req, res) => {
+    var id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        res.status(404).send();
+    } else {
+        Todo.findById(id).then((todo) => {
+            res.status(200).send(todo);
+        }, (err) => {
+            res.status(400).send();
+        })
+    }
+})
+
 app.listen(port, () => {
-    console.log('Server is up on port',port);
+    console.log('Server is up on port', port);
 });
 
 module.exports = {
