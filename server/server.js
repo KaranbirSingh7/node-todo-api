@@ -1,3 +1,4 @@
+require('./../config/config');
 //Libraries
 const _ = require('lodash');
 const express = require('express');
@@ -13,6 +14,23 @@ var port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+//ADD users
+app.post('/users', (req, res) => {
+    var body = _.pick(req.body, ['email', 'password']);
+    //body is Object containing email and password
+    var user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        //Custome Header
+        res.header('x-auth', token).send(user);
+    }).catch((err) => {
+        res.status(400).send(err);
+    })
+});
+
+//ADD Notes
 app.post('/todos', (req, res) => {
     var todo = new Todo({
         text: req.body.text
@@ -26,6 +44,7 @@ app.post('/todos', (req, res) => {
     });
 });
 
+//FETCH ALL NOTES
 app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send(todos);
@@ -34,6 +53,7 @@ app.get('/todos', (req, res) => {
     });
 });
 
+//FETCH Notes by ID
 app.get('/todos/:id', (req, res) => {
     var id = req.params.id;
 
@@ -52,6 +72,7 @@ app.get('/todos/:id', (req, res) => {
     }
 })
 
+//DELETE Notes
 app.delete('/todos/:id', (req, res) => {
     var id = req.params.id;
 
@@ -70,7 +91,7 @@ app.delete('/todos/:id', (req, res) => {
     }
 })
 
-
+// UPDATE Notes
 app.patch('/todos/:id', (req, res) => {
     var id = req.params.id;
     //Pull things that user can have access
@@ -86,14 +107,14 @@ app.patch('/todos/:id', (req, res) => {
             body.completedAt = new Date().getTime();
         } else {
             body.completed = false; //Task not completed
-            body.completedAt = null; 
+            body.completedAt = null;
         }
         //Update $set everything that user entered
-        Todo.findByIdAndUpdate(id, {$set: body}, {new : true}).then( (todo) => {
+        Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {
             if (!todo) {
                 res.status(404).send();
             } else {
-                res.status(200).send({todo});
+                res.status(200).send({ todo });
             }
         }).catch((e) => res.status(400).send());
     }
