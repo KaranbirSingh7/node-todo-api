@@ -9,5 +9,6 @@ Using <b>Postman</b> Notes can be added or deleted
 1. GET /todos - returns all notes 
 2. GET /todos/id - return specific note that matches id parameter
 3. POST /todos - add JSON data in body to add note
-4. DELETE /todos/id - delete note with id
-5. UPDATE /todos/id - provide text/completed to update notes
+4. POST /users - add Users to database
+5. DELETE /todos/id - delete note with id
+6. UPDATE /todos/id - provide text/completed to update notes
